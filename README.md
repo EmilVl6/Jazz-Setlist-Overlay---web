@@ -1,2 +1,1 @@
-<video src="preview/beta.mp4" controls width="600"></video>
-JazzSoc Overlay Preview
+[![JazzSoc Overlay Preview](preview/beta.png)](https://photos.app.goo.gl/6CYTkDrh5BTVtCQa9)
