@@ -64,6 +64,37 @@ function parseCSV(csv) {
   return { headers, data };
 }
 
+function loadSetlist() {
+  if (window.fetchSetlistFromFirebase && typeof window.fetchSetlistFromFirebase === 'function') {
+    return Promise.resolve()
+      .then(() => window.fetchSetlistFromFirebase())
+      .then((csv) => {
+        if (typeof csv === 'string' && csv.trim()) return csv;
+        try {
+          if (Array.isArray(csv)) {
+            if (Array.isArray(csv[0])) return csv.map(r => r.join(',')).join('\n');
+            const keys = Object.keys(csv[0] || {});
+            const rows = csv.map(obj => keys.map(k => obj[k] ?? '').join(','));
+            return [keys.join(','), ...rows].join('\n');
+          }
+          if (typeof csv === 'object' && csv !== null) {
+            const vals = Object.values(csv);
+            if (vals.length && typeof vals[0] === 'string') return vals.join('\n');
+            if (vals.length && typeof vals[0] === 'object') {
+              const keys = Object.keys(vals[0]);
+              const rows = vals.map(obj => keys.map(k => obj[k] ?? '').join(','));
+              return [keys.join(','), ...rows].join('\n');
+            }
+          }
+        } catch (e) {
+        }
+        return fetch('setlist.csv').then(r => r.text());
+      })
+      .catch(() => fetch('setlist.csv').then(r => r.text()));
+  }
+  return fetch('setlist.csv').then((response) => response.text());
+}
+
 function populateTable(headers, data) {
   const table = document.getElementById('csv-table');
   table.innerHTML = '';
@@ -182,13 +213,13 @@ function updateNowPlaying(){
     }
 
 document.getElementById('edit-btn').addEventListener('click', () => {
-  let csvData = localStorage.getItem('csvData');
-  if (csvData) {
-    const { headers, data } = parseCSV(csvData);
+  loadSetlist().then((csv) => {
+    try { localStorage.setItem('csvData', csv); } catch(_){}
+    const { headers, data } = parseCSV(csv);
     populateTable(headers, data);
     const tbody = document.querySelector('#csv-table tbody');
-    const savedActive = localStorage.getItem('activeRow');
 
+    const savedActive = localStorage.getItem('activeRow');
     if (
       savedActive !== null &&
       savedActive !== '-1' &&
@@ -206,22 +237,8 @@ document.getElementById('edit-btn').addEventListener('click', () => {
 
     updateNowPlaying();
     document.getElementById('modal').style.display = 'flex';
-  } else {
-    fetch('setlist.csv')
-      .then((response) => response.text())
-      .then((csv) => {
-        localStorage.setItem('csvData', csv);
-        const { headers, data } = parseCSV(csv);
-        populateTable(headers, data);
-        const tbody = document.querySelector('#csv-table tbody');
-        activeRowIndex = 0;
-        if (tbody && tbody.children[0]) {
-          tbody.children[0].classList.add('active-row');
-        }
-        updateNowPlaying();
-        document.getElementById('modal').style.display = 'flex';
-      });
-  }
+  }).catch(()=>{
+  });
 });
 
 document.getElementById('csv-table').addEventListener('click', (e) => {
@@ -253,6 +270,12 @@ function saveTableToLocalStorage() {
   const csv = [headers, ...rows].map((row) => row.join(',')).join('\n');
   localStorage.setItem('csvData', csv);
   localStorage.setItem('activeRow', activeRowIndex.toString());
+
+  try{
+    if(window.writeSetlistToFirebase && typeof window.writeSetlistToFirebase === 'function'){
+      window.writeSetlistToFirebase(csv).catch(()=>{});
+    }
+  }catch(_){ }
 }
 
 document.getElementById('add-row-btn').addEventListener('click', () => {
@@ -328,35 +351,32 @@ function applyActive(idx){
 }
 
 window.addEventListener('load', ()=>{
-    const csvData = localStorage.getItem('csvData');
-    const table = document.getElementById('csv-table');
-    if(table && !table.querySelector('tbody')){
-        if(csvData){
-            try{
-                const {headers,data} = parseCSV(csvData);
-                populateTable(headers,data);
-                const tbody = document.querySelector('#csv-table tbody');
-                const savedActive = localStorage.getItem('activeRow');
-                let idx = -1;
-                if(savedActive!==null && savedActive!=='-1' && tbody && tbody.children[parseInt(savedActive)]){
-                    idx = parseInt(savedActive);
-                }
-                if(idx>=0){
-                    tbody.children[idx].classList.add('active-row');
-                    activeRowIndex = idx; window.activeRowIndex = idx;
-                }
-                if(typeof updateNowPlaying === 'function') updateNowPlaying();
-            }catch(e){console.warn('failed to populate from storage',e)}
-        } else {
-            fetch('setlist.csv').then(r=>{ if(!r.ok) throw new Error('no csv'); return r.text(); }).then(csv=>{
-                try{
-                    const {headers,data} = parseCSV(csv);
-                    populateTable(headers,data);
-                    if(typeof updateNowPlaying === 'function') updateNowPlaying();
-                }catch(e){console.warn('failed to parse fetched csv',e)}
-            }).catch(()=>{/**/});
-        }
-    }
+  const table = document.getElementById('csv-table');
+  if(!table || table.querySelector('tbody')) return;
+
+  loadSetlist().then(csv => {
+    if(!csv) return;
+    try{ localStorage.setItem('csvData', csv); }catch(_){ }
+    try{
+      const {headers,data} = parseCSV(csv);
+      populateTable(headers,data);
+      const tbody = document.querySelector('#csv-table tbody');
+      const savedActive = localStorage.getItem('activeRow');
+      let idx = -1;
+      if(savedActive!==null && savedActive!=='-1' && tbody && tbody.children[parseInt(savedActive)]){
+        idx = parseInt(savedActive);
+      }
+      if(idx>=0){
+        tbody.children[idx].classList.add('active-row');
+        activeRowIndex = idx; window.activeRowIndex = idx;
+      } else if(tbody && tbody.children[0]){
+        tbody.children[0].classList.add('active-row');
+        activeRowIndex = 0; window.activeRowIndex = 0;
+      }
+      if(typeof updateNowPlaying === 'function') updateNowPlaying();
+    }catch(e){ console.warn('failed to parse fetched csv', e); }
+  }).catch(()=>{
+  });
 });
 
 document.addEventListener('keydown',function(e){
