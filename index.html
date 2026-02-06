@@ -1,73 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>JazzSoc Setlist</title>
-        <link rel="icon" href="Logo.ico">
-        <link rel="stylesheet" href="scheme.css">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" as="style">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    </head>
-    <body>
-        <header>
-            <img src="Logo.png" id="logo" alt="Logo">
-            <noscript>This site requires JavaScript to function.</noscript>
-            <div id="time">Loading...</div>
-            <button id="fullscreen-btn">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1 1v4h1V2h3V1H1zm11 0v1h3v3h1V1h-4zM1 11v4h4v-1H2v-3H1zm14 0v4h-4v-1h3v-3h1z"/>
-                </svg>
-            </button>
-            <button id="edit-btn">Edit Setlist</button>
-        </header>
-        <div class="content">
-            <div class="now-card">
-                <div class="now-title">NOW PLAYING</div>
-                <div class="now-song">—</div>
-                <div class="next-item" aria-hidden="true">
-                    <div class="label">NEXT</div>
-                    <div class="song next-song">—</div>
-                </div>
-            </div>
-        </div>
-        <div id="modal">
-            <div id="modal-content">
-                <h2>Edit Setlist</h2>
-                <div id="table-container">
-                    <table id="csv-table"></table>
-                </div>
-                <div id="modal-buttons">
-                    <button id="add-row-btn">Add Row</button>
-                    <button id="download-btn">Download CSV</button>
-                    <button id="close-btn">Close</button>
-                </div>
-            </div>
-        </div>
-        <div id="cursor"></div>
-        <div id="qr">
-            <div class="qr-img-wrap"><img src="QR.png" alt="linktr.ee QR"></div>
-            <div class="qr-link">linktr.ee</div>
-        </div>
-        <div id="nav-hint" aria-hidden="true">Use ←   → to change selection</div>
-        <div id="upcoming-list" aria-hidden="true"></div>
-                <script>
-                    // Synchronously expose Firebase config for compat loader
-                    window.__FIREBASE_CONFIG__ = {
-                        apiKey: "AIzaSyDnFyluxyggix5wt9ljz6N5ZAx4b8qfi5o",
-                        authDomain: "usydjazzsocoverlay.firebaseapp.com",
-                        databaseURL: "https://usydjazzsocoverlay-default-rtdb.asia-southeast1.firebasedatabase.app",
-                        projectId: "usydjazzsocoverlay",
-                        storageBucket: "usydjazzsocoverlay.firebasestorage.app",
-                        messagingSenderId: "77021410076",
-                        appId: "1:77021410076:web:dacb100da221e84fcdc0d9",
-                        measurementId: "G-6P6R4GMG3C"
-                    };
-                </script>
-                <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-                <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-                <script src="firebase.js"></script>
-        <script src="worker.js"></script>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USYD Jazz Society</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        p {
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>USYD Jazz Society</h1>
+    </div>
+</body>
 </html>
