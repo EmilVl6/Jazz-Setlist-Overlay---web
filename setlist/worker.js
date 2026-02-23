@@ -241,16 +241,6 @@ document.getElementById('edit-btn').addEventListener('click', () => {
   });
 });
 
-document.getElementById('csv-table').addEventListener('click', (e) => {
-  if (e.target && e.target.tagName === 'TD') {
-    const row = e.target.parentElement;
-    document.querySelectorAll('#csv-table tr').forEach((r) => r.classList.remove('active-row'));
-    row.classList.add('active-row');
-    activeRowIndex = parseInt(row.dataset.index, 10);
-    updateNowPlaying();
-  }
-});
-
 document.getElementById('csv-table').removeEventListener('click', () => {});
 document.getElementById('csv-table').addEventListener('dblclick', (e) => {
   if (e.target && e.target.tagName === 'TD') {
@@ -404,7 +394,6 @@ document.addEventListener('keydown',function(e){
         e.preventDefault();
     }
 });
-document.addEventListener('click',function(e){ if(e.target&&e.target.tagName==='TD'){ const tr=e.target.parentElement; const tbody=tr.parentElement; const idx=Array.from(tbody.children).indexOf(tr); if(idx>=0) applyActive(idx); } });
 window.setActiveRow = applyActive;
 function setBackgroundUrl(url){
     try{
