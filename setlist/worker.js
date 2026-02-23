@@ -251,6 +251,17 @@ document.getElementById('csv-table').addEventListener('click', (e) => {
   }
 });
 
+document.getElementById('csv-table').removeEventListener('click', () => {});
+document.getElementById('csv-table').addEventListener('dblclick', (e) => {
+  if (e.target && e.target.tagName === 'TD') {
+    const row = e.target.parentElement;
+    document.querySelectorAll('#csv-table tr').forEach((r) => r.classList.remove('active-row'));
+    row.classList.add('active-row');
+    activeRowIndex = parseInt(row.dataset.index, 10);
+    updateNowPlaying();
+  }
+});
+
 document.getElementById('csv-table').addEventListener('input', () => {
   saveTableToLocalStorage();
 });
